@@ -3,6 +3,7 @@ import {PlayController} from "./controllers/PlayController";
 import {Loader} from "./Loader";
 import {ShaderManager} from "./shaders/ShaderManager";
 import MathHelpers from "./helpers/MathHelpers";
+import { StoreController } from "./controllers/StoreController";
 
 export class RockRacingGame {
     private _game: Phaser.Game;
@@ -73,9 +74,16 @@ export class RockRacingGame {
         loader.load();
     }
 
+    switchController(c: any) {
+        if (!!this._controller) {
+            this._controller.destroy();
+        }
+        this._controller = <BaseController>(new c(null, this._scene, this._shaderManager, this._matter, this));
+    }
+
     create() {
         this._shaderManager = new ShaderManager(this._game, this._scene);
-        this._controller = new PlayController(null, this._scene, this._shaderManager, this._matter);
+        this.switchController(StoreController);
     }
 
     update() {

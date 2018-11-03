@@ -1,6 +1,7 @@
 import {InputManager} from "../helpers/InputManager";
 import {ShaderManager} from "../shaders/ShaderManager";
 import {BaseController} from "../controllers/BaseController";
+import { IItem } from "../services/itemsService";
 
 export abstract class BaseEntity {
     private _destroyables: any[] = [];
@@ -38,4 +39,5 @@ export interface IEntityParameters {
     y?: number;
     w?: number;
     h?: number;
+    items?: IItem[];
 }

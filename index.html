@@ -10,10 +10,25 @@
             height: 100%;
             overflow: hidden;
         }
+        @font-face {
+            font-family: "ARCADECLASSIC";
+            src: url("/assets/fonts/ARCADECLASSIC.TTF");
+        }
+        #font-preload {
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            position: fixed;
+            left: -10px;
+            top: -10px;
+            font-family: "ARCADECLASSIC";
+            font-size: 10px;
+        }
     </style>
 </head>
 <body>
 <script src="vendor/phaser.min.js"></script>
 <script src="main.js"></script>
+<p id="font-preload">x</p>
 </body>
 </html>

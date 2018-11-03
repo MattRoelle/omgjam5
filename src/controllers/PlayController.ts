@@ -1,4 +1,5 @@
 import {BaseController, ControllerArgs} from "./BaseController";
+import { StoreController} from "./StoreController";
 import MathHelpers from "../helpers/MathHelpers";
 import {Racer } from "../entities/Racer";
 import { BaseEntity } from "../entities/BaseEntity";
@@ -25,28 +26,36 @@ export class PlayController extends BaseController {
     private _bg2: Phaser.GameObjects.TileSprite;
     private _bg3: Phaser.GameObjects.TileSprite;
     private _finish: Phaser.GameObjects.Sprite;
+    private _finished: boolean = false;
     
     init(): void {
         this._bg1 = this._scene.add.tileSprite(0, -100, 800, 600, "bg1");
         this._bg1.setOrigin(0, 0);
+        this.addD(this._bg1);
 
         this._bg3 = this._scene.add.tileSprite(0, 0, 800, 600, "bg3");
         this._bg3.setOrigin(0, 0);
+        this.addD(this._bg3);
 
         this._bg2 = this._scene.add.tileSprite(0, 0, 800, 600, "bg2");
         this._bg2.setOrigin(0, 0);
+        this.addD(this._bg2);
 
         this._startingTower = this._scene.add.sprite(-240, -170, "starting");
         this._startingTower.setOrigin(0, 0);
+        this.addD(this._startingTower);
 
         this._startingTowerClose = this._scene.add.sprite(-232, -170, "starting_close");
         this._startingTowerClose.setOrigin(0, 0);
         this._startingTowerClose.setVisible(false);
+        this.addD(this._startingTowerClose);
 
         this._tileSprite = this._scene.add.tileSprite(-1000, 200, 2000, 400, "terrain1");
         this._tileSprite.setOrigin(0, 0);
+        this.addD(this._tileSprite);
 
         const floorRect = this._scene.matter.add.rectangle(0, 300, 100000, 200, { isStatic: true });
+        //this.addD(floorRect);
 
         this._racers = [
             this.create<Racer>(Racer, { x: -205, y: 140 }),
@@ -55,7 +64,7 @@ export class PlayController extends BaseController {
 
         this._racers[0].isPlayer = true;
         this._racers[1].speed = 0.002;
-        this._racers[1].jumpDelay = 1000;
+        this._racers[1].jumpDelay = 3000;
 
         this._matter.world.setGravity(0, 0);
 
@@ -73,9 +82,13 @@ export class PlayController extends BaseController {
         this._rt = this._scene.add.renderTexture(0, 0, 2000, 2000);
         this._rt.setOrigin(0, 0);
         this._rt.angle = 10;
+        this.addD(this._rt);
 
         this.generate();
 
+        const uiBg = this._scene.add.sprite(800, 0, "uibg");
+        uiBg.setOrigin(1, 0);
+        this.addD(uiBg);
 
         if (USE_RT) {
             this._tileSprite.setVisible(false);
@@ -88,8 +101,6 @@ export class PlayController extends BaseController {
             for(let o of this._obstacles) {
                 (<any>o).sprite.setVisible(false);
             }
-            const uiBg = this._scene.add.sprite(800, 0, "uibg");
-            uiBg.setOrigin(1, 0);
         } else {
             this._scene.cameras.main.startFollow(this._racers[0].sprite);
         }
@@ -119,12 +130,17 @@ export class PlayController extends BaseController {
     }
 
     finish(): void {
+        if (this._finished) return;
+        this._finished = true;
+
         this._scene.add.tween({
             targets: this._rt,
             angle: 0,
             duration: 1000,
             ease: 'Power2',
         });
+
+        this._game.switchController(StoreController);
     }
     
     destroy(): void {
@@ -136,6 +152,8 @@ export class PlayController extends BaseController {
     }
 
     update(): void {
+        if (this.destroyed) return;
+
         super.update();
 
         const ps = this._racers[0];
@@ -175,6 +193,7 @@ export class PlayController extends BaseController {
                 r.finishT = this._scene.time.now;
                 if (r.isPlayer) {
                     this.finish();
+                    return;
                 }
             }
         }
