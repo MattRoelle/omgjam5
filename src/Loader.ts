@@ -40,6 +40,7 @@ export class Loader {
         this._scene.load.image("finishfg", "/assets/finishfg.png");
         this._scene.load.image("splashbg", "/assets/splashbg.png");
         this._scene.load.image("splashfg", "/assets/splashfg.png");
+        this._scene.load.image("title", "/assets/title.png");
         this._scene.load.spritesheet("boost1", "/assets/boost.png", {
             frameWidth: 100,
             frameHeight: 100,

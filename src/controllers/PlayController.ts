@@ -70,10 +70,12 @@ export class PlayController extends BaseController {
         const floorRect = this._scene.matter.add.rectangle(0, 300, 100000, 200, { isStatic: true });
         //this.addD(floorRect);
 
+        const adjDifficulty = careerService.nRaces - 3;
+
         this._racers = [
             this.create<Racer>(Racer, { x: -205, y: 140, items: careerService.ownedItems }),
-            this.create<Racer>(Racer, { x: -205, y: 70, items: getOpponent(careerService.nRaces + 2) }),
-            this.create<Racer>(Racer, { x: -205, y: 0, items: getOpponent(careerService.nRaces + 4) }),
+            this.create<Racer>(Racer, { x: -205, y: 70, items: getOpponent(adjDifficulty + 2) }),
+            this.create<Racer>(Racer, { x: -205, y: 0, items: getOpponent(adjDifficulty + 4) }),
         ];
 
         this._racers[0].isPlayer = true;
@@ -156,7 +158,7 @@ export class PlayController extends BaseController {
                     r.active = true;
                 }
             }, 1500)
-        }, 2500);
+        }, 1500);
     }
 
     generate(): void {
@@ -169,7 +171,7 @@ export class PlayController extends BaseController {
         ];
 
         this._obstacles = [];
-        const nObstacles = 8;
+        const nObstacles = 4 + careerService.nRaces + Math.floor(Math.random()*3);
         const offset = 500;
 
         for(let i = 0; i < nObstacles; i++) {
@@ -190,23 +192,27 @@ export class PlayController extends BaseController {
         this._finished = true;
 
         const _this = this;
-        const t = this._scene.add.tween({
-            targets: this._rt,
-            angle: 0,
+
+        const g = this._scene.add.graphics();
+        g.alpha = 0;
+        g.fillStyle(0x000000, 1);
+        g.fillRect(0, 0, 800, 600);
+        this.addD(g);
+
+        this._scene.add.tween({
+            targets: g,
+            alpha: 1,
             duration: 1000,
-            ease: 'Power2',
-            onComplete: () => {
-                setTimeout(() => {
-                    careerService.nRaces++;
-                    raceFinishService.placement = this._playerFinish;
-                    raceFinishService.earnings = (40 + (careerService.nRaces*5))*(4 - this._playerFinish);
-                    careerService.money += raceFinishService.earnings;
-                    _this.fadeOut(() => {
-                        _this._game.switchController(RaceFinishController);
-                    });
-                }, 1500);
-            }
+            ease: 'Power2'
         });
+
+        setTimeout(() => {
+            careerService.nRaces++;
+            raceFinishService.placement = this._playerFinish;
+            raceFinishService.earnings = (45 + Math.floor(Math.random()*8) +(careerService.nRaces*7))*(4 - this._playerFinish);
+            careerService.money += raceFinishService.earnings;
+            _this._game.switchController(RaceFinishController);
+        }, 1000);
     }
     
     destroy(): void {

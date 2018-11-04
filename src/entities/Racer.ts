@@ -118,21 +118,15 @@ export class Racer extends BaseEntity {
 
     update(): void {
         if (this.active) {
-            if (this.finishT == 0) {
-                if (!this.isPlayer) {
-                    this.move(1);
-                    if (this.sprite.y > 160) {
-                        this.jump();
-                        this.boosting = false;
-                    } else {
-                        this.boosting = true;
-                    }
+            if (!this.isPlayer) {
+                this.move(1);
+                if (this.sprite.y > 160) {
+                    this.jump();
+                    this.boosting = false;
                 } else {
+                    this.boosting = true;
                 }
             } else {
-                this.sprite.setVelocity(0, 0);
-                this.sprite.setCollidesWith(null);
-                this.sprite.setIgnoreGravity(true);
             }
         }
 

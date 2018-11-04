@@ -1,10 +1,8 @@
 import { itemService } from "./itemsService";
 
 export default {
-    money: 10000,
+    money: 100,
     nRaces: 0,
     ownedItems: [
-        //itemService.ITEMS.WR1,
-        //itemService.ITEMS.BUMPERS1
     ]
 };

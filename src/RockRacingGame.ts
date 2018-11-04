@@ -5,6 +5,7 @@ import {ShaderManager} from "./shaders/ShaderManager";
 import MathHelpers from "./helpers/MathHelpers";
 import { StoreController } from "./controllers/StoreController";
 import ScaleManager from "./scaleManager";
+import { TitleController } from "./controllers/TitleController";
 
 export class RockRacingGame {
     private _game: Phaser.Game;
@@ -75,7 +76,7 @@ export class RockRacingGame {
 
     create() {
         this._shaderManager = new ShaderManager(this._game, this._scene);
-        this.switchController(StoreController);
+        this.switchController(TitleController);
     }
 
     update() {
