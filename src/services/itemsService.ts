@@ -1,5 +1,10 @@
 interface IItemEffect {
     weight?: number;
+    airFriction?: number;
+    speed?: number;
+    bounce?: number;
+    fuel?: number;
+    rocket?: number;
 }
 
 interface IItemOffset { x?: number; y?: number; }
@@ -28,7 +33,7 @@ const itemService = {
             description: "Carve out the center of your rock a bit.",
             price: 50,
             spriteKey: "rock2",
-            effect: { weight: -5 },
+            effect: { speed: 0.1 },
             priority: 0,
             replacesBaseSprite: true,
             ignoreRotation: false
@@ -38,7 +43,7 @@ const itemService = {
             description: "A little goes a long way",
             price: 50,
             spriteKey: "tank1",
-            effect: { gasTank: 5 },
+            effect: { fuel: 25 },
             priority: 1,
             replacesBaseSprite: false,
             ignoreRotation: false,
@@ -49,10 +54,20 @@ const itemService = {
             description: "Bouncy",
             price: 50,
             spriteKey: "bumpers1",
-            effect: { bounce: 0.05 },
+            effect: { bounce: 0.07 },
             priority: 5,
             replacesBaseSprite: false,
             ignoreRotation: false,
+        },
+        ROCKET1: {
+            name: "Rocket Mk 1",
+            description: "Ehhhhhh",
+            price: 50,
+            spriteKey: "rocket1",
+            effect: { rocket: 0.05 },
+            priority: 10,
+            replacesBaseSprite: false,
+            ignoreRotation: true,
         }
     },
 };

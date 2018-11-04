@@ -5,8 +5,17 @@ import {Racer } from "../entities/Racer";
 import { BaseEntity } from "../entities/BaseEntity";
 import { Jump1 } from "../entities/Jump1";
 import { Platform1 } from "../entities/Platform1";
+import { Platform2 } from "../entities/Platform2";
+import careerService from "../services/careerService";
 
 const USE_RT = true;
+
+
+const obstacles = [
+    Jump1,
+    Platform1,
+    Platform2
+];
 
 export class PlayController extends BaseController {
     public map: Phaser.Tilemaps.Tilemap;
@@ -27,6 +36,9 @@ export class PlayController extends BaseController {
     private _bg3: Phaser.GameObjects.TileSprite;
     private _finish: Phaser.GameObjects.Sprite;
     private _finished: boolean = false;
+    private _speedText: Phaser.GameObjects.Text;
+    private _jumpBar: Phaser.GameObjects.Sprite;
+    private _fuelBar: Phaser.GameObjects.Sprite;
     
     init(): void {
         this._bg1 = this._scene.add.tileSprite(0, -100, 800, 600, "bg1");
@@ -58,12 +70,11 @@ export class PlayController extends BaseController {
         //this.addD(floorRect);
 
         this._racers = [
-            this.create<Racer>(Racer, { x: -205, y: 140 }),
-            this.create<Racer>(Racer, { x: -205, y: 70 }),
+            this.create<Racer>(Racer, { x: -205, y: 140, items: careerService.ownedItems }),
+            this.create<Racer>(Racer, { x: -205, y: 70, items: [] }),
         ];
 
         this._racers[0].isPlayer = true;
-        this._racers[1].speed = 0.002;
         this._racers[1].jumpDelay = 3000;
 
         this._matter.world.setGravity(0, 0);
@@ -71,7 +82,7 @@ export class PlayController extends BaseController {
         const _this = this;
         setTimeout(() => {
             _this._startingTowerClose.alpha = 0;
-            _this._matter.world.setGravity(0.5, 1);
+            _this._matter.world.setGravity(0.25, 1);
             this._racers[0].sprite.setVelocityX(5);
             this._racers[1].sprite.setVelocityX(3);
             for(let r of this._racers) {
@@ -86,9 +97,29 @@ export class PlayController extends BaseController {
 
         this.generate();
 
-        const uiBg = this._scene.add.sprite(800, 0, "uibg");
-        uiBg.setOrigin(1, 0);
+        const uiBg = this._scene.add.sprite(800, 600, "uibg");
+        uiBg.setOrigin(1, 1);
         this.addD(uiBg);
+
+        this._jumpBar = this._scene.add.sprite(800, 600, "jumpbar")
+        this._jumpBar.setOrigin(1, 1);
+        this._jumpBar.setCrop(0, 126, 800, 600);
+        this.addD(this._jumpBar);
+
+        this._fuelBar = this._scene.add.sprite(800, 600, "fuelbar")
+        this._fuelBar.setOrigin(1, 1);
+        this._fuelBar.setCrop(0, 126, 800, 600);
+        this.addD(this._fuelBar);
+
+        this._speedText = this._scene.add.text(780, 560, "00", {
+            fontFamily: "ARCADECLASSIC",
+            fontSize: 72,
+            color: "#FFFFFF",
+            align: "right",
+            antialias: false
+        });
+        this._speedText.setStroke("#000000", 4);
+        this._speedText.setOrigin(1, 1);
 
         if (USE_RT) {
             this._tileSprite.setVisible(false);
@@ -97,6 +128,10 @@ export class PlayController extends BaseController {
             this._finish.setVisible(false);
             for(let r of this._racers) {
                 r.sprite.setVisible(false);
+                r.boostSprite.setVisible(false);
+                for(let is of r.itemSprites) {
+                    is.setVisible(false);
+                }
             }
             for(let o of this._obstacles) {
                 (<any>o).sprite.setVisible(false);
@@ -108,22 +143,17 @@ export class PlayController extends BaseController {
 
     generate(): void {
         this._obstacles = [];
-        const nObstacles = 3;
+        const nObstacles = 5;
         const offset = 500;
 
         for(let i = 0; i < nObstacles; i++) {
             const r = Math.random();
             const x = (i*600) + 200 + offset;
+            const c = obstacles[Math.floor(Math.random()*obstacles.length)];
 
-            if (r < 0.5) {
-                this._obstacles.push(this.create(Jump1, {
-                    x: x
-                }));
-            } else {
-                this._obstacles.push(this.create(Platform1, {
-                    x: x
-                }));
-            }
+            this._obstacles.push(this.create(c, {
+                x: x
+            }));
         }
 
         this._finish = this._scene.add.sprite((nObstacles + 1)*600 + 200 + offset, 106, "finish");
@@ -133,14 +163,18 @@ export class PlayController extends BaseController {
         if (this._finished) return;
         this._finished = true;
 
-        this._scene.add.tween({
+        const _this = this;
+        const t = this._scene.add.tween({
             targets: this._rt,
             angle: 0,
             duration: 1000,
             ease: 'Power2',
+            onComplete: () => {
+                setTimeout(() => {
+                    _this._game.switchController(StoreController);
+                }, 500);
+            }
         });
-
-        this._game.switchController(StoreController);
     }
     
     destroy(): void {
@@ -167,8 +201,8 @@ export class PlayController extends BaseController {
 
         this._rt.clear();
 
-        const x = 400 - ps.sprite.x;
-        const y = 250 - ps.sprite.y;
+        const x = 300 - ps.sprite.x;
+        const y = 270 - ps.sprite.y;
 
         const boundAdj = this.adjDraw.bind(this);
         if (USE_RT) {
@@ -184,9 +218,20 @@ export class PlayController extends BaseController {
             }
         }
 
+        const player = this._racers[0];
         if (this._input.up.isDown) {
-            this._racers[0].jump();
+            player.jump();
         }
+
+        if (this._input.right.isDown) {
+            player.move(1);
+        }
+
+        if (this._input.left.isDown) {
+            player.move(-1);
+        }
+
+        this._speedText.text = Math.floor((<any>player.sprite).body.velocity.x*5).toString();
 
         for(let r of this._racers) {
             if (r.sprite.x > this._finish.x + 10) {
@@ -197,5 +242,15 @@ export class PlayController extends BaseController {
                 }
             }
         }
+
+        // 126
+        // 244
+        const t = this._scene.time.now;
+        const jt = Math.min(1, (t - player.lastJumpAt)/player.jumpDelay);
+        this._jumpBar.setCrop(0, 244 - (jt*(244 - 126)), 800, 600);
+
+        console.log(player.fuel);
+        const ft = Math.min(1, player.fuel/100);
+        this._fuelBar.setCrop(0, 244 - (ft*(244 - 126)), 800, 600);
     }
 }

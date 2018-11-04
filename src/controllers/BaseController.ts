@@ -44,7 +44,7 @@ export abstract class BaseController {
         }
     }
     
-    destroy() {
+    destroy(): void {
         if (this.destroyed) return;
         this.destroyed = true;
 

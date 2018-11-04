@@ -2,6 +2,7 @@ import { BaseController } from "./BaseController";
 import careerService from "../services/careerService";
 import {itemService, IItem} from "../services/itemsService";
 import { Racer } from "../entities/Racer";
+import { PlayController } from "./PlayController";
 
 export class StoreController extends BaseController {
 
@@ -12,11 +13,13 @@ export class StoreController extends BaseController {
     private _priceText: Phaser.GameObjects.Text;
     private _preview: Racer;
     private _buyBtn: Phaser.GameObjects.Sprite;
+    private _selItem: IItem;
+    private _exitText: Phaser.GameObjects.Text;
 
     init(): void {
         this._storeBg = this._scene.add.sprite(0, 0, "store");
         this._storeBg.setOrigin(0, 0);
-        this._moneyText = this._scene.add.text(755, 18, "100000", {
+        this._moneyText = this._scene.add.text(755, 18, careerService.money.toString(), {
             fontFamily: "ARCADECLASSIC",
             fontSize: 48,
             color: "#FFFFFF",
@@ -24,6 +27,21 @@ export class StoreController extends BaseController {
             antialias: false
         });
         this._moneyText.setOrigin(1, 0);
+
+        this._exitText = this._scene.add.text(40, 520, "exit", {
+            fontFamily: "ARCADECLASSIC",
+            fontSize: 48,
+            color: "#FF0000",
+            antialias: false
+        });
+        this._exitText.setOrigin(0, 0);
+
+        this._exitText.setInteractive();
+        const _this = this;
+        this._exitText.on("pointerdown", () => {
+            _this._game.switchController(PlayController);
+        });
+
 
         this._descText = this._scene.add.text(280, 380, "", {
             fontFamily: "ARCADECLASSIC",
@@ -37,7 +55,7 @@ export class StoreController extends BaseController {
         });
         this._descText.setOrigin(0, 0);
 
-        this._priceText = this._scene.add.text(280, 90, "10000", {
+        this._priceText = this._scene.add.text(280, 90, "0", {
             fontFamily: "ARCADECLASSIC",
             fontSize: 40,
             color: "#FFFFFF",
@@ -69,17 +87,28 @@ export class StoreController extends BaseController {
         this._buyBtn = this._scene.add.sprite(620, 320, "buybtn");
         this._buyBtn.setOrigin(0, 0);
         this._buyBtn.setVisible(false);
-        this._buyBtn.setInteractive(true);
+        this._buyBtn.setInteractive();
 
-        const _this = this;
         this._buyBtn.on("pointerdown", () => {
-
+            _this.buy();
         });
     }
 
+    buy() {
+        if (careerService.money > this._selItem.price) {
+            careerService.money -= this._selItem.price;
+            careerService.ownedItems.push(this._selItem);
+            this._game.switchController(StoreController);
+        } else {
+
+        }
+    }
+
     select(item: IItem) {
+        this._selItem = item;
         this._buyBtn.setVisible(true);
         this._descText.text = item.description.split("").map(c => c == " " ? "   " : c).join("");
+        this._priceText.text = item.price.toString();
 
         this._preview.destroy();
         this._preview = new Racer(this._scene, this._input, this._shaderManager, {
@@ -98,6 +127,15 @@ export class StoreController extends BaseController {
 
     update(): void {
         this._preview.previewUpdate();
+    }
+
+    destroy() {
+        super.destroy();
+        this._preview.destroy();
+        this._storeBg.destroy();
+        for(let si of this._items) {
+            si.destroy();
+        }
     }
 }
 
@@ -123,7 +161,7 @@ class StoreItem {
         this._sprite.setInteractive();
 
         const _this = this;
-        this._sprite.on("pointerdown", () => {
+        this._sprite.on("pointerdown", (pointer: any) => {
             _this._controller.deselectAll();
             _this.select();
             _this._controller.select(this.item);
@@ -138,5 +176,10 @@ class StoreItem {
     deselect() {
         this._selected = false;
         this._sprite.setTexture("storeitem");
+    }
+
+    destroy() {
+        this._sprite.destroy();
+        this._text.destroy();
     }
 }

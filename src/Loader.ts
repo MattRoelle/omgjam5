@@ -17,11 +17,20 @@ export class Loader {
         this._scene.load.image("starting_close", "/assets/starting_close.png");
         this._scene.load.image("jump1", "/assets/jump1.png");
         this._scene.load.image("platform1", "/assets/platform1.png");
+        this._scene.load.image("platform2", "/assets/platform2.png");
         this._scene.load.image("storeitem", "/assets/storeitem.png");
         this._scene.load.image("storeitem_s", "/assets/storeitem_s.png");
         this._scene.load.image("tank1", "/assets/tank1.png");
         this._scene.load.image("bumpers1", "/assets/bumpers1.png");
         this._scene.load.image("buybtn", "/assets/buybtn.png");
+        this._scene.load.image("jumpbar", "/assets/jumpbar.png");
+        this._scene.load.image("fuelbar", "/assets/fuelbar.png");
+        this._scene.load.image("rocket1", "/assets/rocket1.png");
+        this._scene.load.spritesheet("boost1", "/assets/boost.png", {
+            frameWidth: 100,
+            frameHeight: 100,
+            endFrame: 30
+        });
 
         /*
         this._scene.load.image("tiles", "/assets/tilemap.png");
