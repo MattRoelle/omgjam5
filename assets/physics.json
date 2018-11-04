@@ -80,5 +80,31 @@
 				]
 			}
 		]
+	},
+	"platform3": {
+		"type": "fromPhysicsEditor",
+		"label": "platform3",
+		"isStatic": false,
+		"density": 0.10000000149011612,
+		"restitution": 0,
+		"friction": 0.10000000149011612,
+		"frictionAir": 0.009999999776482582,
+		"frictionStatic": 0.5,
+		"collisionFilter": {
+			"group": 0,
+			"category": 1,
+			"mask": 255
+		},
+		"fixtures": [
+			{
+				"label": "",
+				"isSensor": false,
+				"circle": {
+					"x": 116.95652173913052,
+					"y": 116.78260869565217,
+					"radius": 113.48540254511863
+				}
+			}
+		]
 	}
 }

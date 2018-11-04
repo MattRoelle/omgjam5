@@ -155,6 +155,7 @@ const itemService = {
             ignoreRotation: false,
         },
         ROCKET1: {
+            category: "rocket",
             id: "rocket1",
             name: "Rocket Mk 1",
             description: "Ehhhhhh",
@@ -164,7 +165,33 @@ const itemService = {
             priority: -30,
             replacesBaseSprite: false,
             ignoreRotation: true,
-        }
+        },
+       ROCKET2: {
+            category: "rocket",
+            id: "rocket2",
+            requirements: ["rocket1"],
+            name: "Rocket Mk 2",
+            description: "Ehhhhhh",
+            price: 400,
+            spriteKey: "rocket2",
+            effect: { rocket: 0.6 },
+            priority: -30,
+            replacesBaseSprite: false,
+            ignoreRotation: true,
+        },
+        ROCKET3: {
+            category: "rocket",
+            id: "rocket3",
+            requirements: ["rocket2"],
+            name: "Rocket Mk 3",
+            description: "Ehhhhhh",
+            price: 700,
+            spriteKey: "rocket3",
+            effect: { rocket: 0.8 },
+            priority: -30,
+            replacesBaseSprite: false,
+            ignoreRotation: true,
+        } 
     },
 };
 

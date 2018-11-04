@@ -21,6 +21,7 @@ export class Loader {
         this._scene.load.image("jump1", "/assets/jump1.png");
         this._scene.load.image("platform1", "/assets/platform1.png");
         this._scene.load.image("platform2", "/assets/platform2.png");
+        this._scene.load.image("platform3", "/assets/platform3.png");
         this._scene.load.image("storeitem", "/assets/storeitem.png");
         this._scene.load.image("storeitem_s", "/assets/storeitem_s.png");
         this._scene.load.image("tank1", "/assets/tank1.png");
@@ -32,6 +33,8 @@ export class Loader {
         this._scene.load.image("jumpbar", "/assets/jumpbar.png");
         this._scene.load.image("fuelbar", "/assets/fuelbar.png");
         this._scene.load.image("rocket1", "/assets/rocket1.png");
+        this._scene.load.image("rocket2", "/assets/rocket2.png");
+        this._scene.load.image("rocket3", "/assets/rocket3.png");
         this._scene.load.image("spinner", "/assets/spinner.png");
         this._scene.load.image("finishbg", "/assets/finishbg.png");
         this._scene.load.image("finishfg", "/assets/finishfg.png");

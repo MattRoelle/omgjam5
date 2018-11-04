@@ -12,15 +12,9 @@ import { itemService } from "../services/itemsService";
 import getOpponent from "../services/opponentService";
 import { RaceFinishController } from "./RaceFinishController";
 import raceFinishService from "../services/raceFinishService";
+import { Platform3 } from "../entities/Platform3";
 
 const USE_RT = true;
-
-const obstacles = [
-    Jump1,
-    Platform1,
-    Platform2,
-    Spinner
-];
 
 export class PlayController extends BaseController {
     public map: Phaser.Tilemaps.Tilemap;
@@ -166,8 +160,16 @@ export class PlayController extends BaseController {
     }
 
     generate(): void {
+        const obstacles = [
+            Jump1,
+            Platform1,
+            Platform2,
+            Platform3,
+            Spinner
+        ];
+
         this._obstacles = [];
-        const nObstacles = 6;
+        const nObstacles = 8;
         const offset = 500;
 
         for(let i = 0; i < nObstacles; i++) {
@@ -231,8 +233,18 @@ export class PlayController extends BaseController {
 
         this._rt.clear();
 
-        const x = 300 - ps.sprite.x;
-        const y = 270 - ps.sprite.y;
+        let shakeX = 0;
+        let shakeY = 0;
+
+        const player = this._racers[0];
+
+        if (player.boosting && player.hasRocket && player.fuel > 0) {
+            shakeX = (Math.random()*8) - 4;
+            shakeY = (Math.random()*8) - 4;
+        }
+
+        const x = 300 - ps.sprite.x + shakeX;
+        const y = 270 - ps.sprite.y + shakeY;
 
         const boundAdj = this.adjDraw.bind(this);
         if (USE_RT) {
@@ -248,7 +260,6 @@ export class PlayController extends BaseController {
             }
         }
 
-        const player = this._racers[0];
         if (this._input.up.isDown) {
             player.jump();
         }
