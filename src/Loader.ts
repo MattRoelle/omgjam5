@@ -13,6 +13,9 @@ export class Loader {
         this._scene.load.image("bg3", "/assets/bg3.png");
         this._scene.load.image("rock1", "/assets/rock1.png");
         this._scene.load.image("rock2", "/assets/rock2.png");
+        this._scene.load.image("rock3", "/assets/rock3.png");
+        this._scene.load.image("rock4", "/assets/rock4.png");
+        this._scene.load.image("rock5", "/assets/rock5.png");
         this._scene.load.image("starting", "/assets/starting.png");
         this._scene.load.image("starting_close", "/assets/starting_close.png");
         this._scene.load.image("jump1", "/assets/jump1.png");
@@ -21,15 +24,28 @@ export class Loader {
         this._scene.load.image("storeitem", "/assets/storeitem.png");
         this._scene.load.image("storeitem_s", "/assets/storeitem_s.png");
         this._scene.load.image("tank1", "/assets/tank1.png");
+        this._scene.load.image("tank2", "/assets/tank2.png");
+        this._scene.load.image("tank3", "/assets/tank3.png");
+        this._scene.load.image("tank4", "/assets/tank4.png");
         this._scene.load.image("bumpers1", "/assets/bumpers1.png");
         this._scene.load.image("buybtn", "/assets/buybtn.png");
         this._scene.load.image("jumpbar", "/assets/jumpbar.png");
         this._scene.load.image("fuelbar", "/assets/fuelbar.png");
         this._scene.load.image("rocket1", "/assets/rocket1.png");
+        this._scene.load.image("spinner", "/assets/spinner.png");
+        this._scene.load.image("finishbg", "/assets/finishbg.png");
+        this._scene.load.image("finishfg", "/assets/finishfg.png");
+        this._scene.load.image("splashbg", "/assets/splashbg.png");
+        this._scene.load.image("splashfg", "/assets/splashfg.png");
         this._scene.load.spritesheet("boost1", "/assets/boost.png", {
             frameWidth: 100,
             frameHeight: 100,
             endFrame: 30
+        });
+        this._scene.load.spritesheet("321", "/assets/321.png", {
+            frameWidth: 181,
+            frameHeight: 181,
+            endFrame: 22
         });
 
         /*

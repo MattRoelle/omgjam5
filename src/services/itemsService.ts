@@ -10,16 +10,20 @@ interface IItemEffect {
 interface IItemOffset { x?: number; y?: number; }
 
 interface IItem {
+    id?: string;
     name: string;
     description: string;
     price: number;
-    spriteKey: string;
+    spriteKey?: string;
     effect: IItemEffect;
     priority: number;
-    replacesBaseSprite: boolean;
-    ignoreRotation: boolean;
+    replacesBaseSprite?: boolean;
+    ignoreRotation?: boolean;
     offset?: IItemOffset;
     origin?: IItemOffset;
+    aiOnly?: boolean;
+    requirements?: string[];
+    category?: string;
 }
 
 interface IItemService {
@@ -28,31 +32,122 @@ interface IItemService {
 
 const itemService = {
     ITEMS: <{ [key: string]: IItem }>{
-        WR1: {
+        AI_HANDICAP1: <IItem>{
+            id: "ai1",
+            name: "x",
+            description: "x",
+            price: 50,
+            effect: { speed: 0.2 },
+            priority: 0,
+            aiOnly: true
+        },
+        WR1: <IItem> {
+            id: "wr1",
             name: "Weight Reduction 1",
             description: "Carve out the center of your rock a bit.",
-            price: 50,
+            price: 100,
             spriteKey: "rock2",
             effect: { speed: 0.1 },
             priority: 0,
             replacesBaseSprite: true,
             ignoreRotation: false
         },
-        GAS1: {
+        WR2: <IItem>{
+            id: "wr2",
+            requirements: ["wr1"],
+            name: "Weight Reduction 2",
+            description: "It loks like a deformed donut...",
+            price: 250,
+            spriteKey: "rock3",
+            effect: { speed: 0.2 },
+            priority: 0,
+            replacesBaseSprite: true,
+            ignoreRotation: false
+        },
+        WR3: <IItem>{
+            id: "wr3",
+            requirements: ["wr2"],
+            name: "Weight Reduction 3",
+            description: "Is that even legal?",
+            price: 600,
+            spriteKey: "rock4",
+            effect: { speed: 0.3 },
+            priority: 0,
+            replacesBaseSprite: true,
+            ignoreRotation: false
+        },
+        WR4: <IItem>{
+            id: "wr4",
+            requirements: ["wr3"],
+            name: "Carbon Fiber",
+            description: "That's not even a rock!",
+            price: 1000,
+            spriteKey: "rock5",
+            effect: { speed: 0.4 },
+            priority: 0,
+            replacesBaseSprite: true,
+            ignoreRotation: false
+        },
+        GAS1: <IItem> {
+            id: "gas1",
+            category: "gas",
             name: "Small Gas Tank",
             description: "A little goes a long way",
-            price: 50,
+            price: 100,
             spriteKey: "tank1",
             effect: { fuel: 25 },
-            priority: 1,
+            priority: -10,
+            replacesBaseSprite: false,
+            ignoreRotation: false,
+            origin: { x: 0.5, y: 1 }
+        },
+        GAS2: <IItem> {
+            id: "gas2",
+            category: "gas",
+            requirements: ["gas1"],
+            name: "Medium Gas Tank",
+            description: "Now we're cooking with gas.",
+            price: 250,
+            spriteKey: "tank2",
+            effect: { fuel: 25 },
+            priority: -10,
+            replacesBaseSprite: false,
+            ignoreRotation: false,
+            origin: { x: 0.5, y: 1 }
+        },
+        GAS3: <IItem> {
+            id: "gas3",
+            category: "gas",
+            requirements: ["gas2"],
+            name: "Large Gas Tank",
+            description: "Now we're cooking with gas.",
+            price: 400,
+            spriteKey: "tank3",
+            effect: { fuel: 25 },
+            priority: -10,
+            replacesBaseSprite: false,
+            ignoreRotation: false,
+            origin: { x: 0.5, y: 1 }
+        },
+        GAS4: <IItem> {
+            id: "gas4",
+            category: "gas",
+            requirements: ["gas3"],
+            name: "Top Secret Tank",
+            description: "Shhh",
+            price: 750,
+            spriteKey: "tank4",
+            effect: { fuel: 25 },
+            priority: -10,
             replacesBaseSprite: false,
             ignoreRotation: false,
             origin: { x: 0.5, y: 1 }
         },
         BUMPERS1: {
+            id: "b1",
             name: "Bumpers",
             description: "Bouncy",
-            price: 50,
+            price: 200,
             spriteKey: "bumpers1",
             effect: { bounce: 0.07 },
             priority: 5,
@@ -60,17 +155,22 @@ const itemService = {
             ignoreRotation: false,
         },
         ROCKET1: {
+            id: "rocket1",
             name: "Rocket Mk 1",
             description: "Ehhhhhh",
-            price: 50,
+            price: 150,
             spriteKey: "rocket1",
-            effect: { rocket: 0.05 },
-            priority: 10,
+            effect: { rocket: 1 },
+            priority: -30,
             replacesBaseSprite: false,
             ignoreRotation: true,
         }
     },
 };
+
+let n = 0;
+for(let k in itemService.ITEMS) n++;
+console.log(n + " items");
 
 export {
     itemService,

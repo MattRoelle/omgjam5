@@ -7,14 +7,19 @@ import { Jump1 } from "../entities/Jump1";
 import { Platform1 } from "../entities/Platform1";
 import { Platform2 } from "../entities/Platform2";
 import careerService from "../services/careerService";
+import { Spinner } from "../entities/Spinner";
+import { itemService } from "../services/itemsService";
+import getOpponent from "../services/opponentService";
+import { RaceFinishController } from "./RaceFinishController";
+import raceFinishService from "../services/raceFinishService";
 
 const USE_RT = true;
-
 
 const obstacles = [
     Jump1,
     Platform1,
-    Platform2
+    Platform2,
+    Spinner
 ];
 
 export class PlayController extends BaseController {
@@ -22,6 +27,8 @@ export class PlayController extends BaseController {
     public layer: Phaser.Tilemaps.StaticTilemapLayer;
     private _dbg: Phaser.GameObjects.Graphics;
     private _ground: Phaser.GameObjects.TileSprite;
+    private _finishes = 0;
+    private _playerFinish = 0;
 
     private _rt: Phaser.GameObjects.RenderTexture;
     private _racers: Racer[];
@@ -71,7 +78,8 @@ export class PlayController extends BaseController {
 
         this._racers = [
             this.create<Racer>(Racer, { x: -205, y: 140, items: careerService.ownedItems }),
-            this.create<Racer>(Racer, { x: -205, y: 70, items: [] }),
+            this.create<Racer>(Racer, { x: -205, y: 70, items: getOpponent(careerService.nRaces + 2) }),
+            this.create<Racer>(Racer, { x: -205, y: 0, items: getOpponent(careerService.nRaces + 4) }),
         ];
 
         this._racers[0].isPlayer = true;
@@ -80,15 +88,6 @@ export class PlayController extends BaseController {
         this._matter.world.setGravity(0, 0);
 
         const _this = this;
-        setTimeout(() => {
-            _this._startingTowerClose.alpha = 0;
-            _this._matter.world.setGravity(0.25, 1);
-            this._racers[0].sprite.setVelocityX(5);
-            this._racers[1].sprite.setVelocityX(3);
-            for(let r of this._racers) {
-                r.active = true;
-            }
-        }, 2000);
 
         this._rt = this._scene.add.renderTexture(0, 0, 2000, 2000);
         this._rt.setOrigin(0, 0);
@@ -139,11 +138,36 @@ export class PlayController extends BaseController {
         } else {
             this._scene.cameras.main.startFollow(this._racers[0].sprite);
         }
+
+        const countdown = this.addD(this._scene.add.sprite(400, 300, "321"));
+        this._scene.anims.create({
+            key: "countdown_anim",
+            frames: this._scene.anims.generateFrameNumbers("321", {
+                start: 0,
+                end: 22,
+            }),
+            frameRate: 15,
+        });
+        countdown.alpha = 0;
+        setTimeout(() => {
+            countdown.alpha = 1;
+            countdown.anims.play("countdown_anim");
+            setTimeout(() => {
+                _this._startingTowerClose.alpha = 0;
+                _this._matter.world.setGravity(0.25, 1);
+                this._racers[0].sprite.setVelocityX(7);
+                this._racers[1].sprite.setVelocityX(5);
+                this._racers[2].sprite.setVelocityX(3);
+                for(let r of this._racers) {
+                    r.active = true;
+                }
+            }, 1500)
+        }, 2500);
     }
 
     generate(): void {
         this._obstacles = [];
-        const nObstacles = 5;
+        const nObstacles = 6;
         const offset = 500;
 
         for(let i = 0; i < nObstacles; i++) {
@@ -171,8 +195,14 @@ export class PlayController extends BaseController {
             ease: 'Power2',
             onComplete: () => {
                 setTimeout(() => {
-                    _this._game.switchController(StoreController);
-                }, 500);
+                    careerService.nRaces++;
+                    raceFinishService.placement = this._playerFinish;
+                    raceFinishService.earnings = (40 + (careerService.nRaces*5))*(4 - this._playerFinish);
+                    careerService.money += raceFinishService.earnings;
+                    _this.fadeOut(() => {
+                        _this._game.switchController(RaceFinishController);
+                    });
+                }, 1500);
             }
         });
     }
@@ -231,14 +261,20 @@ export class PlayController extends BaseController {
             player.move(-1);
         }
 
+        player.boosting = this._input.space.isDown;
+
         this._speedText.text = Math.floor((<any>player.sprite).body.velocity.x*5).toString();
 
         for(let r of this._racers) {
             if (r.sprite.x > this._finish.x + 10) {
-                r.finishT = this._scene.time.now;
-                if (r.isPlayer) {
-                    this.finish();
-                    return;
+                if (!r.finishT) {
+                    r.finishT = this._scene.time.now;
+                    this._finishes++;
+                    if (r.isPlayer) {
+                        this._playerFinish = this._finishes;
+                        this.finish();
+                        return;
+                    }
                 }
             }
         }
@@ -249,7 +285,6 @@ export class PlayController extends BaseController {
         const jt = Math.min(1, (t - player.lastJumpAt)/player.jumpDelay);
         this._jumpBar.setCrop(0, 244 - (jt*(244 - 126)), 800, 600);
 
-        console.log(player.fuel);
         const ft = Math.min(1, player.fuel/100);
         this._fuelBar.setCrop(0, 244 - (ft*(244 - 126)), 800, 600);
     }

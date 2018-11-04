@@ -10,6 +10,9 @@ export class Racer extends BaseEntity {
     public jumpDelay: number = 1500;
     public fuel: number;
     public boostSprite: Phaser.GameObjects.Sprite;
+    public boosting: boolean;
+    public rocket: number;
+    public hasRocket: boolean;
 
     public lastJumpAt: number = -1000;
     public itemSprites: Phaser.GameObjects.Sprite[];
@@ -28,6 +31,7 @@ export class Racer extends BaseEntity {
         this.boostSprite.anims.play("boost_anim");
         this.boostSprite.setScale(2, 2);
 
+        this.rocket = 1;
         this.speed = 0.2;
 
         if (!!this._params.x) {
@@ -52,25 +56,41 @@ export class Racer extends BaseEntity {
         this.fuel = 0;
 
         this.itemSprites = [];
-        for(let i of this._params.items.sort((a, b) => a.priority - b.priority)) {
+        for(let i of this._params.items.sort((a, b) => b.priority - a.priority)) {
             if (i.replacesBaseSprite) {
                 this.sprite.setTexture(i.spriteKey);
-            } else {
-                const spr = this._scene.add.sprite(this.sprite.x, this.sprite.y, i.spriteKey);
-                if (!!i.origin) {
-                    spr.setOrigin(i.origin.x, i.origin.y);
-                } else {
-                    spr.setOrigin(0.5, 0.5);
+            } else if (!!i.spriteKey) {
+                let createSprite = true;
+
+                if (!!i.category) {
+                    const otherSprite = this.itemSprites.find(s => (<any>s).__item.category == i.category);
+                    if (!!otherSprite) {
+                        createSprite = false;
+                        otherSprite.setTexture(i.spriteKey);
+                    }
                 }
-                (<any>spr).__item = i;
-                this.itemSprites.push(spr);
-                this.add(spr);
+
+                if (createSprite) {
+                    const spr = this._scene.add.sprite(this.sprite.x, this.sprite.y, i.spriteKey);
+                    if (!!i.origin) {
+                        spr.setOrigin(i.origin.x, i.origin.y);
+                    } else {
+                        spr.setOrigin(0.5, 0.5);
+                    }
+                    (<any>spr).__item = i;
+                    this.itemSprites.push(spr);
+                    this.add(spr);
+                }
 
                 if (i.effect.airFriction) af += i.effect.airFriction; 
                 if (i.effect.speed) this.speed += i.effect.speed; 
                 if (i.effect.weight) weight += i.effect.weight; 
                 if (i.effect.bounce) bounce += i.effect.bounce; 
                 if (i.effect.fuel) this.fuel += i.effect.fuel; 
+                if (i.effect.rocket) {
+                    this.hasRocket = true;
+                    this.rocket += i.effect.rocket; 
+                }
             }
         }
 
@@ -90,7 +110,7 @@ export class Racer extends BaseEntity {
 
     jump() {
         const t = this._scene.time.now;
-        if (t - this.lastJumpAt > this.jumpDelay && this.active && this.sprite.y > 120) {
+        if (t - this.lastJumpAt > this.jumpDelay && this.active) {
             this.lastJumpAt = t;
             this.sprite.setVelocityY(-9);
         }
@@ -103,6 +123,9 @@ export class Racer extends BaseEntity {
                     this.move(1);
                     if (this.sprite.y > 160) {
                         this.jump();
+                        this.boosting = false;
+                    } else {
+                        this.boosting = true;
                     }
                 } else {
                 }
@@ -112,6 +135,11 @@ export class Racer extends BaseEntity {
                 this.sprite.setIgnoreGravity(true);
             }
         }
+
+        if (this.boosting && this.hasRocket) {
+            this.fuel -= 0.5;
+        }
+        this.boostSprite.alpha = (this.boosting && this.hasRocket && this.fuel > 0) ? 1 : 0;
 
         for(let i of this.itemSprites) {
             const itm: IItem = (<any>i).__item;
@@ -142,6 +170,12 @@ export class Racer extends BaseEntity {
 
     move(dx: number) {
         if (!this.active) return;
-        this.sprite.setVelocityX((<any>this.sprite.body).velocity.x + (this.speed*dx));
+
+        let scale = 1;
+        if (this.boosting && this.hasRocket && this.fuel > 0) {
+            scale = this.rocket;
+        }
+
+        this.sprite.setVelocityX((<any>this.sprite.body).velocity.x + (this.speed*dx)*scale);
     }
 }

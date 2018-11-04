@@ -4,6 +4,7 @@ import {Loader} from "./Loader";
 import {ShaderManager} from "./shaders/ShaderManager";
 import MathHelpers from "./helpers/MathHelpers";
 import { StoreController } from "./controllers/StoreController";
+import ScaleManager from "./scaleManager";
 
 export class RockRacingGame {
     private _game: Phaser.Game;
@@ -42,31 +43,22 @@ export class RockRacingGame {
                     //debug: true
                 }
             },
+            callbacks: {
+                postBoot: () => {
+                    new ScaleManager(this._game.canvas, !this._game.device.os.desktop);
+                }
+            }
         });
 
         (<any>window).game = this._game;
         
+        /*
         document.addEventListener("keydown", ev => {
             if (ev.which === 70)  {
                 (<any>_this._game.canvas)[_this._game.device.fullscreen.request]();
             }
         });
-        
-        window.addEventListener("resize", () => {
-            if (!!document.webkitFullscreenElement)  {
-                const w = window.innerWidth;
-                const h = window.innerHeight;
-
-                const aw = w/<number>_this._game.config.width;
-                const ah = h/<number>_this._game.config.height;
-
-                const a = Math.min(aw,  ah);
-
-                _this._game.canvas.style["transform"] = `scale(${a}, ${a})`;
-            } else {
-                _this._game.canvas.style["transform"] = `scale(1, 1)`;
-            }
-        });
+        */
     }
 
     preload() {

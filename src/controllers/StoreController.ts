@@ -27,6 +27,7 @@ export class StoreController extends BaseController {
             antialias: false
         });
         this._moneyText.setOrigin(1, 0);
+        this.addD(this._moneyText);
 
         this._exitText = this._scene.add.text(40, 520, "exit", {
             fontFamily: "ARCADECLASSIC",
@@ -35,11 +36,15 @@ export class StoreController extends BaseController {
             antialias: false
         });
         this._exitText.setOrigin(0, 0);
+        this.addD(this._exitText);
 
         this._exitText.setInteractive();
         const _this = this;
-        this._exitText.on("pointerdown", () => {
-            _this._game.switchController(PlayController);
+        this._exitText.on("pointerdown", (pointer: any) => {
+            _this._preview.destroy();
+            _this.fadeOut(() => {
+                _this._game.switchController(PlayController);
+            });
         });
 
 
@@ -54,6 +59,7 @@ export class StoreController extends BaseController {
             }
         });
         this._descText.setOrigin(0, 0);
+        this.addD(this._descText);
 
         this._priceText = this._scene.add.text(280, 90, "0", {
             fontFamily: "ARCADECLASSIC",
@@ -66,12 +72,29 @@ export class StoreController extends BaseController {
             }
         });
         this._priceText.setOrigin(0, 0);
+        this.addD(this._priceText);
 
         this._items = [];
         let idx = 0;
         for(let key in itemService.ITEMS) {
             const item = <IItem>(itemService.ITEMS[key]);
-            if (careerService.ownedItems.find(i => i.name == item.name)) continue;
+
+            let skip = false;
+            if (item.aiOnly || careerService.ownedItems.find(i => i.name == item.name)) skip = true;
+
+            if (!!item.requirements) {
+                for(let r of item.requirements) {
+                    const has = careerService.ownedItems.findIndex(i => i.id == r)
+                    console.log(r, careerService.ownedItems);
+                    console.log(has);
+                    if (has < 0) {
+                        skip = true;
+                    }
+                }
+            }
+
+            if (skip) continue;
+
             const storeItem = new StoreItem(this._scene, item, idx, this);
             this._items.push(storeItem);
             idx++;
@@ -89,15 +112,16 @@ export class StoreController extends BaseController {
         this._buyBtn.setVisible(false);
         this._buyBtn.setInteractive();
 
-        this._buyBtn.on("pointerdown", () => {
+        this._buyBtn.on("pointerdown", (pointer: any) => {
             _this.buy();
         });
     }
 
     buy() {
-        if (careerService.money > this._selItem.price) {
+        if (careerService.money >= this._selItem.price) {
             careerService.money -= this._selItem.price;
             careerService.ownedItems.push(this._selItem);
+            this.ignoreFade();
             this._game.switchController(StoreController);
         } else {
 
@@ -126,13 +150,16 @@ export class StoreController extends BaseController {
     }
 
     update(): void {
+        if (this._fadedOut) return;
         this._preview.previewUpdate();
     }
 
     destroy() {
         super.destroy();
+
         this._preview.destroy();
         this._storeBg.destroy();
+
         for(let si of this._items) {
             si.destroy();
         }
