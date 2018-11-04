@@ -24,6 +24,8 @@ export class Loader {
         this._scene.load.image("platform3", "/assets/platform3.png");
         this._scene.load.image("storeitem", "/assets/storeitem.png");
         this._scene.load.image("storeitem_s", "/assets/storeitem_s.png");
+        this._scene.load.image("jumpmod1", "/assets/jumpmod1.png");
+        this._scene.load.image("jumpmod2", "/assets/jumpmod2.png");
         this._scene.load.image("tank1", "/assets/tank1.png");
         this._scene.load.image("tank2", "/assets/tank2.png");
         this._scene.load.image("tank3", "/assets/tank3.png");

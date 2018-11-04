@@ -37,6 +37,10 @@ export default function getOpponent(difficulty: number): IItem[] {
         items.push(itemService.ITEMS.WR3);
     }
 
+    if (difficulty >= 11) {
+        items.push(itemService.ITEMS.JUMP1);
+    }
+
     if (difficulty >= 13) {
         const r = Math.random();
         if (r > 0.5) {

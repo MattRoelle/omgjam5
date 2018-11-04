@@ -5,6 +5,7 @@ interface IItemEffect {
     bounce?: number;
     fuel?: number;
     rocket?: number;
+    jumpDelay?: number;
 }
 
 interface IItemOffset { x?: number; y?: number; }
@@ -88,6 +89,31 @@ const itemService = {
             replacesBaseSprite: true,
             ignoreRotation: false
         },
+        JUMP1: <IItem> {
+            id: "jump1",
+            category: "jump",
+            name: "Jump Module 1",
+            description: "Allows you to jump more frequently",
+            price: 250,
+            spriteKey: "jumpmod1",
+            effect: { jumpDelay: -200 },
+            priority: -10,
+            replacesBaseSprite: false,
+            ignoreRotation: false,
+        },
+        JUMP2: <IItem> {
+            id: "jump2",
+            requirements: ["jump1"],
+            category: "jump",
+            name: "Super Jump Module",
+            description: "Allows you to jump more frequently",
+            price: 500,
+            spriteKey: "jumpmod2",
+            effect: { jumpDelay: -200 },
+            priority: -10,
+            replacesBaseSprite: false,
+            ignoreRotation: false,
+        },
         GAS1: <IItem> {
             id: "gas1",
             category: "gas",
@@ -120,7 +146,7 @@ const itemService = {
             category: "gas",
             requirements: ["gas2"],
             name: "Large Gas Tank",
-            description: "Now we're cooking with gas.",
+            description: "Maximum Capacity!",
             price: 400,
             spriteKey: "tank3",
             effect: { fuel: 25 },
@@ -134,7 +160,7 @@ const itemService = {
             category: "gas",
             requirements: ["gas3"],
             name: "Top Secret Tank",
-            description: "Shhh",
+            description: "Shhhhhhh...",
             price: 750,
             spriteKey: "tank4",
             effect: { fuel: 25 },
@@ -146,10 +172,10 @@ const itemService = {
         BUMPERS1: {
             id: "b1",
             name: "Bumpers",
-            description: "Bouncy",
-            price: 200,
+            description: "Put a rubber ring around your rock to help it's bounciness",
+            price: 300,
             spriteKey: "bumpers1",
-            effect: { bounce: 0.07 },
+            effect: { bounce: 0.09 },
             priority: 5,
             replacesBaseSprite: false,
             ignoreRotation: false,
@@ -158,7 +184,7 @@ const itemService = {
             category: "rocket",
             id: "rocket1",
             name: "Rocket Mk 1",
-            description: "Ehhhhhh",
+            description: "Better than nothing.",
             price: 150,
             spriteKey: "rocket1",
             effect: { rocket: 1 },
@@ -171,7 +197,7 @@ const itemService = {
             id: "rocket2",
             requirements: ["rocket1"],
             name: "Rocket Mk 2",
-            description: "Ehhhhhh",
+            description: "Now that's a real rocket.",
             price: 400,
             spriteKey: "rocket2",
             effect: { rocket: 0.6 },
@@ -184,7 +210,7 @@ const itemService = {
             id: "rocket3",
             requirements: ["rocket2"],
             name: "Rocket Mk 3",
-            description: "Ehhhhhh",
+            description: "Did you steal this from NASA?",
             price: 700,
             spriteKey: "rocket3",
             effect: { rocket: 0.8 },

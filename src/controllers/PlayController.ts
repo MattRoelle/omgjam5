@@ -13,6 +13,7 @@ import getOpponent from "../services/opponentService";
 import { RaceFinishController } from "./RaceFinishController";
 import raceFinishService from "../services/raceFinishService";
 import { Platform3 } from "../entities/Platform3";
+import { Spinner2 } from "../entities/Spinner2";
 
 const USE_RT = true;
 
@@ -167,7 +168,8 @@ export class PlayController extends BaseController {
             Platform1,
             Platform2,
             Platform3,
-            Spinner
+            Spinner,
+            Spinner2
         ];
 
         this._obstacles = [];
@@ -209,7 +211,9 @@ export class PlayController extends BaseController {
         setTimeout(() => {
             careerService.nRaces++;
             raceFinishService.placement = this._playerFinish;
-            raceFinishService.earnings = (45 + Math.floor(Math.random()*8) +(careerService.nRaces*7))*(4 - this._playerFinish);
+            raceFinishService.earnings = (50 + Math.floor(Math.random()*8) +(careerService.nRaces*10))*(4 - this._playerFinish);
+            if (careerService.nRaces > 4) raceFinishService.earnings += 30;
+            if (careerService.nRaces > 8) raceFinishService.earnings += 30;
             careerService.money += raceFinishService.earnings;
             _this._game.switchController(RaceFinishController);
         }, 1000);

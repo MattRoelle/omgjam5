@@ -7,7 +7,7 @@ export class Racer extends BaseEntity {
     public active: boolean = false;
     public finishT: number = 0;
     public isPlayer: boolean = false;
-    public jumpDelay: number = 1500;
+    public jumpDelay: number;
     public fuel: number;
     public boostSprite: Phaser.GameObjects.Sprite;
     public boosting: boolean;
@@ -33,6 +33,7 @@ export class Racer extends BaseEntity {
 
         this.rocket = 1;
         this.speed = 0.2;
+        this.jumpDelay = 1500;
 
         if (!!this._params.x) {
             this.sprite = this.add(this._scene.matter.add.image(this._params.x,  this._params.y,  "rock1"));
@@ -87,6 +88,7 @@ export class Racer extends BaseEntity {
                 if (i.effect.weight) weight += i.effect.weight; 
                 if (i.effect.bounce) bounce += i.effect.bounce; 
                 if (i.effect.fuel) this.fuel += i.effect.fuel; 
+                if (i.effect.jumpDelay) this.jumpDelay += i.effect.jumpDelay; 
                 if (i.effect.rocket) {
                     this.hasRocket = true;
                     this.rocket += i.effect.rocket; 
