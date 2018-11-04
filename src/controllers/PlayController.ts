@@ -71,7 +71,7 @@ export class PlayController extends BaseController {
         const floorRect = this._scene.matter.add.rectangle(0, 300, 100000, 200, { isStatic: true });
         //this.addD(floorRect);
 
-        const adjDifficulty = careerService.nRaces - 3;
+        const adjDifficulty = careerService.nRaces - 1;
 
         this._racers = [
             this.create<Racer>(Racer, { x: -205, y: 140, items: careerService.ownedItems }),
@@ -173,7 +173,9 @@ export class PlayController extends BaseController {
         ];
 
         this._obstacles = [];
-        const nObstacles = 4 + careerService.nRaces + Math.floor(Math.random()*3);
+        let nObstacles = 6 + Math.floor(careerService.nRaces*1.25) + Math.floor(Math.random()*3);
+
+        nObstacles = Math.min(18, nObstacles);
         const offset = 500;
 
         for(let i = 0; i < nObstacles; i++) {
