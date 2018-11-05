@@ -1,5 +1,5 @@
 export default {
-    money: 1000,
+    money: 100,
     nRaces: 0,
     ownedItems: [
     ]
