@@ -40,6 +40,7 @@ export class PlayController extends BaseController {
     private _finish: Phaser.GameObjects.Sprite;
     private _finished: boolean = false;
     private _speedText: Phaser.GameObjects.Text;
+    private _raceNumberText: Phaser.GameObjects.Text;
     private _jumpBar: Phaser.GameObjects.Sprite;
     private _fuelBar: Phaser.GameObjects.Sprite;
     
@@ -135,6 +136,18 @@ export class PlayController extends BaseController {
         });
         this._speedText.setStroke("#000000", 4);
         this._speedText.setOrigin(1, 1);
+        this.addD(this._speedText);
+
+        this._raceNumberText = this._scene.add.text(10, 10, "RACE " + (careerService.nRaces + 1).toString(), {
+            fontFamily: "ARCADECLASSIC",
+            fontSize: 32,
+            color: "#FFFFFF",
+            align: "right",
+            antialias: false
+        });
+        this._raceNumberText.setOrigin(0, 0);
+        this.addD(this._speedText);
+
 
         if (USE_RT) {
             this._tileSprite.setVisible(false);
@@ -220,16 +233,19 @@ export class PlayController extends BaseController {
 
         const _this = this;
 
-        const g = this._scene.add.graphics();
+        const g = this._scene.add.sprite(400, 300, "finishtxt");
         g.alpha = 0;
-        g.fillStyle(0x000000, 1);
-        g.fillRect(0, 0, 800, 600);
-        this.addD(g);
+        g.setScale(0.5, 0.5);
+        g.setOrigin(0.5, 0.5);
+
+        SoundManager.playsfx("cheering");
 
         this._scene.add.tween({
             targets: g,
             alpha: 1,
-            duration: 1000,
+            scaleX: 1,
+            scaleY: 1,
+            duration: 700,
             ease: 'Power2'
         });
 
@@ -240,8 +256,11 @@ export class PlayController extends BaseController {
             if (careerService.nRaces > 4) raceFinishService.earnings += 30;
             if (careerService.nRaces > 8) raceFinishService.earnings += 30;
             careerService.money += raceFinishService.earnings;
-            _this._game.switchController(RaceFinishController);
-        }, 1000);
+            g.destroy();
+            _this.fadeOut(() => {
+                _this._game.switchController(RaceFinishController);
+            });
+        }, 1700);
     }
     
     destroy(): void {

@@ -44,6 +44,7 @@ export class StoreController extends BaseController {
         this._exitText.setInteractive();
         const _this = this;
         this._exitText.on("pointerdown", (pointer: any) => {
+            SoundManager.playsfx("uiselect");
             _this._preview.destroy();
             _this.fadeOut(() => {
                 _this._game.switchController(PlayController);
@@ -205,6 +206,7 @@ class StoreItem {
 
         const _this = this;
         this._sprite.on("pointerdown", (pointer: any) => {
+            SoundManager.playsfx("uiselect");
             _this._controller.deselectAll();
             _this.select();
             _this._controller.select(this.item);

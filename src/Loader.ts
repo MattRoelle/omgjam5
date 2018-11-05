@@ -7,6 +7,7 @@ export class Loader {
         this._scene.load.image("terrain1", "/assets/terrain1.png");
         this._scene.load.image("uibg", "/assets/uibg.png");
         this._scene.load.image("finish", "/assets/finish.png");
+        this._scene.load.image("finishtxt", "/assets/finishtxt.png");
         this._scene.load.image("store", "/assets/store.png");
         this._scene.load.image("bg1", "/assets/bg1.png");
         this._scene.load.image("bg2", "/assets/bg2.png");
@@ -77,6 +78,14 @@ export class Loader {
 
         this._scene.load.audio("blip2", [
             "/assets/sounds/blip2.wav",
+        ]);
+
+        this._scene.load.audio("uiselect", [
+            "/assets/sounds/uiselect.wav",
+        ]);
+
+        this._scene.load.audio("cheering", [
+            "/assets/sounds/cheering.mp3",
         ]);
 
         /*
