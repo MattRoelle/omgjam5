@@ -25,6 +25,7 @@ export class PlayController extends BaseController {
     private _ground: Phaser.GameObjects.TileSprite;
     private _finishes = 0;
     private _playerFinish = 0;
+    private _lastBoost = 0;
 
     private _rt: Phaser.GameObjects.RenderTexture;
     private _racers: Racer[];
@@ -327,6 +328,15 @@ export class PlayController extends BaseController {
         }
 
         player.boosting = this._input.space.isDown;
+
+        if (player.boosting && player.hasRocket && player.fuel > 0 && this._scene.time.now - this._lastBoost > 400) {
+            this._lastBoost = this._scene.time.now;
+            SoundManager.playsfx("boost");
+        }
+
+        if (!player.boosting) {
+            SoundManager.stopSfx("boost");
+        }
 
         this._speedText.text = Math.floor((<any>player.sprite).body.velocity.x*5).toString();
 

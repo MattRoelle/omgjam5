@@ -10,10 +10,11 @@ export default {
         this.blip2 = scene.sound.add("blip2");
         this.uiselect = scene.sound.add("uiselect");
         this.cheering = scene.sound.add("cheering");
+        this.boost = scene.sound.add("boostsfx");
     },
 
     playBgm() {
-        this.bgm.play();
+        this.bgm.play("", { loop: true });
     },
 
     pauseBgm() {
@@ -29,6 +30,13 @@ export default {
             case "blip2": this.blip2.play(); break;
             case "uiselect": this.uiselect.play(); break;
             case "cheering": this.cheering.play(); break;
+            case "boost": this.boost.play();  break;
+        }
+    },
+
+    stopSfx(s: string) {
+        switch(s) {
+            case "boost": this.boost.pause(); break;
         }
     }
 }

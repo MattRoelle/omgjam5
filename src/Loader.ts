@@ -88,6 +88,10 @@ export class Loader {
             "/assets/sounds/cheering.mp3",
         ]);
 
+        this._scene.load.audio("boostsfx", [
+            "/assets/sounds/boost.mp3",
+        ]);
+
         /*
         this._scene.load.image("tiles", "/assets/tilemap.png");
         this._scene.load.spritesheet("water", "/assets/water.png", {
