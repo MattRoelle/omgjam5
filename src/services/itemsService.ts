@@ -182,6 +182,7 @@ const itemService = {
         },
         ROCKET1: {
             category: "rocket",
+            requirements: ["gas1"],
             id: "rocket1",
             name: "Rocket Mk 1",
             description: "Better than nothing.",

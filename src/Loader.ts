@@ -54,6 +54,31 @@ export class Loader {
             endFrame: 22
         });
 
+
+        this._scene.load.audio("bgm", [
+            "/assets/sounds/bgm.mp3",
+        ]);
+
+        this._scene.load.audio("chaching", [
+            "/assets/sounds/chaching.mp3",
+        ]);
+
+        this._scene.load.audio("start1", [
+            "/assets/sounds/start1.mp3",
+        ]);
+
+        this._scene.load.audio("start2", [
+            "/assets/sounds/start2.mp3",
+        ]);
+
+        this._scene.load.audio("blip1", [
+            "/assets/sounds/blip1.wav",
+        ]);
+
+        this._scene.load.audio("blip2", [
+            "/assets/sounds/blip2.wav",
+        ]);
+
         /*
         this._scene.load.image("tiles", "/assets/tilemap.png");
         this._scene.load.spritesheet("water", "/assets/water.png", {

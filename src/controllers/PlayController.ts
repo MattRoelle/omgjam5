@@ -14,6 +14,7 @@ import { RaceFinishController } from "./RaceFinishController";
 import raceFinishService from "../services/raceFinishService";
 import { Platform3 } from "../entities/Platform3";
 import { Spinner2 } from "../entities/Spinner2";
+import SoundManager from "../helpers/SoundManager";
 
 const USE_RT = true;
 
@@ -79,12 +80,30 @@ export class PlayController extends BaseController {
             this.create<Racer>(Racer, { x: -205, y: 0, items: getOpponent(adjDifficulty + 4) }),
         ];
 
+        const _this = this;
+        let _lastSfxPlay = -1000;
+        this._matter.world.on("collisionstart", (ev: any) => {
+            const plyr = _this._racers[0];
+            const t = _this._scene.time.now;
+            for(let p of ev.pairs) {
+                if (p.bodyA == plyr.sprite.body || p.bodyB == plyr.sprite.body) {
+                    //if (p.bodyA == floorRect || p.bodyB == floorRect) return;
+
+                    if (t - _lastSfxPlay > 350) {
+                        _lastSfxPlay = t;
+                        const r = Math.random();
+                        if (r < 0.5) SoundManager.playsfx("blip1");
+                        else  SoundManager.playsfx("blip2");
+                    }
+                }
+            }
+        });
+
         this._racers[0].isPlayer = true;
         this._racers[1].jumpDelay = 3000;
 
         this._matter.world.setGravity(0, 0);
 
-        const _this = this;
 
         this._rt = this._scene.add.renderTexture(0, 0, 2000, 2000);
         this._rt.setOrigin(0, 0);
@@ -149,6 +168,10 @@ export class PlayController extends BaseController {
         setTimeout(() => {
             countdown.alpha = 1;
             countdown.anims.play("countdown_anim");
+            SoundManager.playsfx("start");
+            setTimeout(() => { SoundManager.playsfx("start"); }, 500)
+            setTimeout(() => { SoundManager.playsfx("start"); }, 1000)
+            setTimeout(() => { SoundManager.playsfx("start2"); }, 1500)
             setTimeout(() => {
                 _this._startingTowerClose.alpha = 0;
                 _this._matter.world.setGravity(0.25, 1);
@@ -173,9 +196,9 @@ export class PlayController extends BaseController {
         ];
 
         this._obstacles = [];
-        let nObstacles = 6 + Math.floor(careerService.nRaces*1.25) + Math.floor(Math.random()*3);
+        let nObstacles = 7 + Math.floor(careerService.nRaces*1.25) + Math.floor(Math.random()*3);
 
-        nObstacles = Math.min(18, nObstacles);
+        nObstacles = Math.min(22, nObstacles);
         const offset = 500;
 
         for(let i = 0; i < nObstacles; i++) {

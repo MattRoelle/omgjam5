@@ -3,6 +3,7 @@ import careerService from "../services/careerService";
 import {itemService, IItem} from "../services/itemsService";
 import { Racer } from "../entities/Racer";
 import { PlayController } from "./PlayController";
+import SoundManager from "../helpers/SoundManager";
 
 export class StoreController extends BaseController {
 
@@ -15,6 +16,7 @@ export class StoreController extends BaseController {
     private _buyBtn: Phaser.GameObjects.Sprite;
     private _selItem: IItem;
     private _exitText: Phaser.GameObjects.Text;
+    private _startT: number;
 
     init(): void {
         this._storeBg = this._scene.add.sprite(0, 0, "store");
@@ -29,12 +31,13 @@ export class StoreController extends BaseController {
         this._moneyText.setOrigin(1, 0);
         this.addD(this._moneyText);
 
-        this._exitText = this._scene.add.text(40, 520, "exit", {
+        this._exitText = this._scene.add.text(40, 510, "exit", {
             fontFamily: "ARCADECLASSIC",
-            fontSize: 48,
+            fontSize: 60,
             color: "#FF0000",
             antialias: false
         });
+        this._exitText.setStroke("#000000", 4);
         this._exitText.setOrigin(0, 0);
         this.addD(this._exitText);
 
@@ -48,7 +51,7 @@ export class StoreController extends BaseController {
         });
 
 
-        this._descText = this._scene.add.text(280, 380, "", {
+        this._descText = this._scene.add.text(280, 386, "", {
             fontFamily: "ARCADECLASSIC",
             fontSize: 32,
             color: "#FFFFFF",
@@ -115,6 +118,8 @@ export class StoreController extends BaseController {
         this._buyBtn.on("pointerdown", (pointer: any) => {
             _this.buy();
         });
+
+        this._startT = this._scene.time.now;
     }
 
     buy() {
@@ -123,6 +128,7 @@ export class StoreController extends BaseController {
             careerService.ownedItems.push(this._selItem);
             this.ignoreFade();
             this._game.switchController(StoreController);
+            SoundManager.playsfx("chaching");
         } else {
 
         }
@@ -151,6 +157,16 @@ export class StoreController extends BaseController {
 
     update(): void {
         if (this._fadedOut) return;
+
+        if (this._input.space.isDown && this._scene.time.now - this._startT > 1000) {
+            const _this = this;
+            this._preview.destroy();
+            this.fadeOut(() => {
+                _this._game.switchController(PlayController);
+            });
+            return;
+        }
+
         this._preview.previewUpdate();
     }
 

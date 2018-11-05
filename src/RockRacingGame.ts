@@ -6,6 +6,7 @@ import MathHelpers from "./helpers/MathHelpers";
 import { StoreController } from "./controllers/StoreController";
 import ScaleManager from "./scaleManager";
 import { TitleController } from "./controllers/TitleController";
+import soundManager from "./helpers/SoundManager";
 
 export class RockRacingGame {
     private _game: Phaser.Game;
@@ -31,6 +32,8 @@ export class RockRacingGame {
                     _this.preload();
                 },
                 create() {
+                    soundManager.init(this);
+                    soundManager.playBgm();
                     _this._matter = this.matter;
                     _this.create();
                 },
